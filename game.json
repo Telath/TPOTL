@@ -1,0 +1,263 @@
+{
+  "activePreset": "1",
+  "playerBoxId": 2,
+  "presets": {
+    "1": {
+      "name": "Fairylena",
+      "values": [
+        "0.01 €",
+        "1 €",
+        "5 €",
+        "10 €",
+        "20 €",
+        "50 €",
+        "1522 €",
+        "RIEN",
+        "500 €",
+        "750 €",
+        "1 000 €",
+        "2 000 €",
+        "5 000 €",
+        "10 000 €",
+        "15 000 €",
+        "20 000 €",
+        "30 000 €",
+        "50 000 €",
+        "100 000 €",
+        "500 000 €"
+      ]
+    },
+    "2": {
+      "name": "As2pik",
+      "values": [
+        "Un bonbon",
+        "0.10 €",
+        "0.50 €",
+        "1 €",
+        "2 €",
+        "5 €",
+        "10 €",
+        "15 €",
+        "20 €",
+        "25 €",
+        "30 €",
+        "40 €",
+        "50 €",
+        "60 €",
+        "75 €",
+        "100 €",
+        "150 €",
+        "200 €",
+        "250 €",
+        "500 €"
+      ]
+    },
+    "3": {
+      "name": "Mano",
+      "values": [
+        "500 €",
+        "1 000 €",
+        "2 500 €",
+        "5 000 €",
+        "7 500 €",
+        "10 000 €",
+        "15 000 €",
+        "20 000 €",
+        "25 000 €",
+        "30 000 €",
+        "40 000 €",
+        "50 000 €",
+        "75 000 €",
+        "100 000 €",
+        "150 000 €",
+        "200 000 €",
+        "250 000 €",
+        "300 000 €",
+        "400 000 €",
+        "1 000 000 €"
+      ]
+    },
+    "4": {
+      "name": "Chorks",
+      "values": [
+        "1 €",
+        "2 €",
+        "3 €",
+        "4 €",
+        "5 €",
+        "6 €",
+        "7 €",
+        "8 €",
+        "9 €",
+        "10 €",
+        "11 €",
+        "12 €",
+        "13 €",
+        "14 €",
+        "15 €",
+        "16 €",
+        "17 €",
+        "18 €",
+        "19 €",
+        "20 €"
+      ]
+    },
+    "5": {
+      "name": "Quai10",
+      "values": [
+        "Option A",
+        "Option B",
+        "Option C",
+        "Option D",
+        "Option E",
+        "Option F",
+        "Option G",
+        "Option H",
+        "Option I",
+        "Option J",
+        "Option K",
+        "Option L",
+        "Option M",
+        "Option N",
+        "Option O",
+        "Option P",
+        "Option Q",
+        "Option R",
+        "Option S",
+        "Option T"
+      ]
+    },
+    "6": {
+      "name": "NeonS",
+      "values": [
+        "10 €",
+        "20 €",
+        "30 €",
+        "40 €",
+        "50 €",
+        "60 €",
+        "70 €",
+        "80 €",
+        "90 €",
+        "100 €",
+        "200 €",
+        "300 €",
+        "400 €",
+        "500 €",
+        "600 €",
+        "700 €",
+        "800 €",
+        "900 €",
+        "1 000 €",
+        "2 000 €"
+      ]
+    }
+  },
+  "boxes": [
+    {
+      "id": 1,
+      "value": "0.01 €",
+      "isOpened": false
+    },
+    {
+      "id": 2,
+      "value": "1 €",
+      "isOpened": false
+    },
+    {
+      "id": 3,
+      "value": "5 €",
+      "isOpened": true
+    },
+    {
+      "id": 4,
+      "value": "10 €",
+      "isOpened": false
+    },
+    {
+      "id": 5,
+      "value": "20 €",
+      "isOpened": true
+    },
+    {
+      "id": 6,
+      "value": "50 €",
+      "isOpened": false
+    },
+    {
+      "id": 7,
+      "value": "1522 €",
+      "isOpened": true
+    },
+    {
+      "id": 8,
+      "value": "RIEN",
+      "isOpened": true
+    },
+    {
+      "id": 9,
+      "value": "500 €",
+      "isOpened": true
+    },
+    {
+      "id": 10,
+      "value": "750 €",
+      "isOpened": false
+    },
+    {
+      "id": 11,
+      "value": "1 000 €",
+      "isOpened": false
+    },
+    {
+      "id": 12,
+      "value": "2 000 €",
+      "isOpened": false
+    },
+    {
+      "id": 13,
+      "value": "5 000 €",
+      "isOpened": false
+    },
+    {
+      "id": 14,
+      "value": "10 000 €",
+      "isOpened": false
+    },
+    {
+      "id": 15,
+      "value": "15 000 €",
+      "isOpened": false
+    },
+    {
+      "id": 16,
+      "value": "20 000 €",
+      "isOpened": false
+    },
+    {
+      "id": 17,
+      "value": "30 000 €",
+      "isOpened": false
+    },
+    {
+      "id": 18,
+      "value": "50 000 €",
+      "isOpened": false
+    },
+    {
+      "id": 19,
+      "value": "100 000 €",
+      "isOpened": false
+    },
+    {
+      "id": 20,
+      "value": "500 000 €",
+      "isOpened": false
+    }
+  ],
+  "music": {
+    "isPlaying": false,
+    "volume": 0.05,
+    "isLooping": true
+  }
+}

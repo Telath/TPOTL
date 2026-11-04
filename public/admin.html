@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panneau Animateur - Régie</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --border-color: #334155;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        padding: 30px;
+        min-height: 100vh;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #818cf8, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      h2 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--text-main);
+      }
+
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-bottom: 25px;
+      }
+
+      .music-grid {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .btn-icon {
+        background: var(--primary);
+        color: white;
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.2s ease;
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+      }
+
+      .btn-icon:hover {
+        background: var(--primary-hover);
+        transform: scale(1.05);
+      }
+      .btn-icon.paused {
+        background: var(--warning);
+        box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+      }
+
+      .music-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .music-info-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--primary);
+        cursor: pointer;
+      }
+
+      .music-options {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      .presets-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .presets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 15px;
+      }
+
+      .preset-item {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: all 0.2s;
+      }
+
+      .preset-item.active {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.05);
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.1);
+      }
+
+      .preset-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .preset-badge {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: var(--border-color);
+        color: var(--text-muted);
+      }
+
+      .preset-item.active .preset-badge {
+        background: var(--primary);
+        color: white;
+      }
+      .preset-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .btn-action {
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+      .btn-primary:hover {
+        background: var(--primary-hover);
+      }
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+      }
+
+      .btn-edit {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .boxes-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 12px;
+      }
+
+      .box-control {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .box-id {
+        font-weight: 700;
+        font-size: 15px;
+        width: 75px;
+        color: var(--text-muted);
+      }
+
+      .box-control input[type="text"] {
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        width: 110px;
+        font-weight: 600;
+      }
+
+      .btn-toggle {
+        background: #3b82f6;
+        color: white;
+        flex: 1;
+      }
+      .btn-toggle.opened {
+        background: #f97316;
+      }
+
+      .btn-player {
+        background: #475569;
+        color: white;
+        padding: 8px 12px;
+      }
+      .btn-player.selected {
+        background: var(--success);
+      }
+
+      .footer-actions {
+        margin-top: 30px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      /* Modale de Choix Sonore */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        width: 420px;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-title {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .modal-subtitle {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+      }
+
+      .modal-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .btn-modal-good {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn-modal-bad {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-modal-neutral {
+        background: var(--border-color);
+        color: var(--text-muted);
+        padding: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🎮 Panneau Animateur — Régie</h1>
+      <span
+        id="active-preset-tag"
+        style="
+          font-size: 13px;
+          background: rgba(99, 102, 241, 0.1);
+          border: 1px solid var(--primary);
+          color: #818cf8;
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-weight: 600;
+        "
+        >Préréglage actif : 1</span
+      >
+    </header>
+
+    <!-- Section Musique d'ambiance -->
+    <div class="card">
+      <h2>🎵 Ambiance Sonore</h2>
+      <div class="music-grid">
+        <button
+          id="btn-music-toggle"
+          class="btn-icon"
+          onclick="toggleMusic()"
+          title="Lecture / Pause"
+        >
+          ▶
+        </button>
+
+        <div class="music-details">
+          <div class="music-info-row">
+            <span id="current-time">00:00</span>
+            <span id="duration-time">00:00</span>
+          </div>
+          <input
+            type="range"
+            id="music-seek"
+            min="0"
+            max="100"
+            value="0"
+            onchange="seekMusic(this.value)"
+          />
+        </div>
+
+        <div class="music-options">
+          <div style="display: flex; align-items: center; gap: 8px">
+            🔊
+            <input
+              type="range"
+              id="music-volume"
+              min="0"
+              max="1"
+              step="0.05"
+              value="0.5"
+              style="width: 90px"
+              oninput="changeVolume(this.value)"
+            />
+            <span id="volume-val" style="width: 35px; text-align: right"
+              >50%</span
+            >
+          </div>
+          <label
+            style="
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              user-select: none;
+            "
+          >
+            <input
+              type="checkbox"
+              id="music-loop"
+              checked
+              onchange="toggleLoop(this.checked)"
+              style="accent-color: var(--primary)"
+            />
+            Boucle continue
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Préréglages -->
+    <div class="card">
+      <div class="presets-top">
+        <h2>📁 Préréglages de la partie</h2>
+        <button class="btn-action btn-success" onclick="saveCurrentToPreset()">
+          💾 Sauvegarder dans le préréglage actif
+        </button>
+      </div>
+      <div id="presets-container" class="presets-grid"></div>
+    </div>
+
+    <!-- Section Boîtes -->
+    <div class="card">
+      <h2>📦 Gestion des Boîtes (20 Unités)</h2>
+      <div id="controls" class="boxes-container"></div>
+    </div>
+
+    <div class="footer-actions">
+      <button
+        class="btn-action btn-danger"
+        onclick="reset()"
+        style="padding: 12px 24px; font-size: 15px"
+      >
+        🔄 Réinitialiser complètement la partie
+      </button>
+    </div>
+
+    <!-- Modale Choix Sonore d'Ouverture -->
+    <div id="sound-modal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-title" id="modal-box-title">Ouvrir la Boîte ?</div>
+        <div class="modal-subtitle" id="modal-box-value">Valeur : ---</div>
+
+        <div class="modal-buttons">
+          <button class="btn-modal-good" onclick="confirmOpen('good')">
+            🟢 Bon tirage (open-good.mp3)
+          </button>
+          <button class="btn-modal-bad" onclick="confirmOpen('bad')">
+            🔴 Mauvais tirage (open-bad.mp3)
+          </button>
+          <button class="btn-modal-neutral" onclick="confirmOpen(null)">
+            ⚪ Ouvrir sans effet sonore
+          </button>
+          <button
+            class="btn-modal-neutral"
+            onclick="closeModal()"
+            style="background: transparent; color: var(--danger)"
+          >
+            ❌ Annuler
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const socket = io();
+      let currentActivePreset = "1";
+      let isUserSeeking = false;
+      let pendingBoxToOpen = null;
+
+      socket.on("stateUpdate", (state) => {
+        currentActivePreset = state.activePreset || "1";
+        document.getElementById("active-preset-tag").textContent =
+          `Préréglage actif : ${currentActivePreset}`;
+
+        // Musique
+        if (state.music) {
+          const musicBtn = document.getElementById("btn-music-toggle");
+          const volSlider = document.getElementById("music-volume");
+          const volVal = document.getElementById("volume-val");
+          const loopCheckbox = document.getElementById("music-loop");
+
+          if (state.music.isPlaying) {
+            musicBtn.innerHTML = "⏸";
+            musicBtn.classList.add("paused");
+          } else {
+            musicBtn.innerHTML = "▶";
+            musicBtn.classList.remove("paused");
+          }
+
+          volSlider.value = state.music.volume;
+          volVal.textContent = Math.round(state.music.volume * 100) + "%";
+          loopCheckbox.checked = state.music.isLooping;
+        }
+
+        // Préréglages
+        const presetsContainer = document.getElementById("presets-container");
+        presetsContainer.innerHTML = "";
+
+        for (let i = 1; i <= 6; i++) {
+          const idStr = String(i);
+          const presetData = (state.presets && state.presets[idStr]) || {
+            name: `Préréglage ${i}`,
+          };
+          const isActive = String(currentActivePreset) === idStr;
+
+          const card = document.createElement("div");
+          card.className = `preset-item ${isActive ? "active" : ""}`;
+
+          card.innerHTML = `
+          <div class="preset-header">
+            <span class="preset-badge">Preset ${i} ${isActive ? "★" : ""}</span>
+            <button class="btn-edit" onclick="editPresetName('${idStr}', '${presetData.name.replace(/'/g, "\\'")}')" title="Renommer">✏️</button>
+          </div>
+          <div class="preset-name">${presetData.name}</div>
+          <button class="btn-action ${isActive ? "btn-primary" : "btn-action"}" style="${isActive ? "" : "background: #334155; color: white;"}" onclick="loadPreset('${idStr}')">
+            ${isActive ? "Préréglage Actif" : "Charger ce preset"}
+          </button>
+        `;
+          presetsContainer.appendChild(card);
+        }
+
+        // Boîtes
+        const container = document.getElementById("controls");
+        container.innerHTML = "";
+
+        state.boxes.forEach((box) => {
+          const isPlayerBox = state.playerBoxId === box.id;
+          const div = document.createElement("div");
+          div.className = "box-control";
+
+          div.innerHTML = `
+          <span class="box-id">Boîte ${box.id}</span>
+          <input type="text" value="${box.value}" onchange="changeValue(${box.id}, this.value)" placeholder="Valeur...">
+          
+          <button class="btn-action btn-player ${isPlayerBox ? "selected" : ""}" onclick="selectPlayerBox(${box.id})">
+            ${isPlayerBox ? "📦 Joueur" : "Candidat"}
+          </button>
+
+          <button class="btn-action btn-toggle ${box.isOpened ? "opened" : ""}" onclick="handleBoxClick(${box.id}, ${box.isOpened}, '${box.value.replace(/'/g, "\\'")}')">
+            ${box.isOpened ? "Fermer" : "Ouvrir"}
+          </button>
+        `;
+          container.appendChild(div);
+        });
+      });
+
+      socket.on("musicTimeUpdate", ({ currentTime, duration }) => {
+        if (isUserSeeking) return;
+
+        const curMin = Math.floor(currentTime / 60);
+        const curSec = Math.floor(currentTime % 60);
+        const durMin = Math.floor(isNaN(duration) ? 0 : duration / 60);
+        const durSec = Math.floor(isNaN(duration) ? 0 : duration % 60);
+
+        document.getElementById("current-time").textContent =
+          `${String(curMin).padStart(2, "0")}:${String(curSec).padStart(2, "0")}`;
+        document.getElementById("duration-time").textContent =
+          `${String(durMin).padStart(2, "0")}:${String(durSec).padStart(2, "0")}`;
+
+        const seekElem = document.getElementById("music-seek");
+        seekElem.max = duration || 100;
+        seekElem.value = currentTime;
+      });
+
+      // Gestion du clic sur le bouton Ouvrir / Fermer
+      function handleBoxClick(boxId, isOpened, boxValue) {
+        if (isOpened) {
+          // Si déjà ouverte, on referme directement sans son
+          socket.emit("toggleBox", { boxId: boxId, soundType: null });
+        } else {
+          // Si fermée, on ouvre la modale de choix du son
+          pendingBoxToOpen = boxId;
+          document.getElementById("modal-box-title").textContent =
+            `Ouvrir la Boîte ${boxId}`;
+          document.getElementById("modal-box-value").textContent =
+            `Valeur cachée : ${boxValue}`;
+          document.getElementById("sound-modal").classList.add("active");
+        }
+      }
+
+      function confirmOpen(soundType) {
+        if (pendingBoxToOpen !== null) {
+          socket.emit("toggleBox", {
+            boxId: pendingBoxToOpen,
+            soundType: soundType,
+          });
+          closeModal();
+        }
+      }
+
+      function closeModal() {
+        pendingBoxToOpen = null;
+        document.getElementById("sound-modal").classList.remove("active");
+      }
+
+      function toggleMusic() {
+        socket.emit("controlMusic", { action: "toggle" });
+      }
+      function changeVolume(val) {
+        document.getElementById("volume-val").textContent =
+          Math.round(val * 100) + "%";
+        socket.emit("controlMusic", { volume: val });
+      }
+      function toggleLoop(isLooping) {
+        socket.emit("controlMusic", { isLooping: isLooping });
+      }
+
+      function seekMusic(val) {
+        socket.emit("controlMusic", { currentTime: parseFloat(val) });
+      }
+
+      const seekInput = document.getElementById("music-seek");
+      seekInput.addEventListener("mousedown", () => {
+        isUserSeeking = true;
+      });
+      seekInput.addEventListener("mouseup", (e) => {
+        isUserSeeking = false;
+        seekMusic(e.target.value);
+      });
+
+      function selectPlayerBox(id) {
+        socket.emit("selectPlayerBox", id);
+      }
+      function changeValue(id, newValue) {
+        socket.emit("updateBoxValue", { boxId: id, newValue: newValue });
+      }
+      function loadPreset(presetId) {
+        if (confirm(`Charger le Préréglage ${presetId} ?`)) {
+          socket.emit("loadPreset", presetId);
+        }
+      }
+      function editPresetName(presetId, currentName) {
+        const newName = prompt(
+          `Nouveau nom pour le Préréglage ${presetId} :`,
+          currentName,
+        );
+        if (newName !== null && newName.trim() !== "") {
+          socket.emit("updatePresetName", {
+            presetId: presetId,
+            newName: newName.trim(),
+          });
+        }
+      }
+      function saveCurrentToPreset() {
+        if (
+          confirm(
+            `Voulez-vous écraser les valeurs du Préréglage ${currentActivePreset} ?`,
+          )
+        ) {
+          socket.emit("saveToPreset", currentActivePreset);
+        }
+      }
+      function reset() {
+        if (confirm("Voulez-vous vraiment réinitialiser la partie ?")) {
+          socket.emit("resetGame");
+        }
+      }
+    </script>
+  </body>
+</html>
